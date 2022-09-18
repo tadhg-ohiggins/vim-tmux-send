@@ -1,9 +1,9 @@
-function! vim_tmux_send#send_keys(keys)
+function! vim_tmux_send#send_keys(keys, direction = '+')
     let pane_count = str2nr(trim(system('tmux list-panes | wc -l')))
     if pane_count > 1
         let clear_line_cmd = 'tmux send-keys -t+ C-u'
         call system(clear_line_cmd)
-        let cmd = 'tmux send-keys -t+ ' . a:keys
+        let cmd = 'tmux send-keys -t' . a:direction .' ' . a:keys
         call system(cmd)
     else
         echohl WarningMsg | echo 'No other tmux pane exists' | echohl None
@@ -18,11 +18,11 @@ function! vim_tmux_send#send_make_cmd()
     call vim_tmux_send#send_keys(keys)
 endfunction
 
-function! vim_tmux_send#send_line()
+function! vim_tmux_send#send_line(direction = '+')
     let current_line = getline('.')
     let current_line = shellescape(current_line)
     let keys = current_line . ' ENTER'
-    call vim_tmux_send#send_keys(keys)
+    call vim_tmux_send#send_keys(keys, a:direction)
 endfunction
 
 function! vim_tmux_send#send_selection(type)

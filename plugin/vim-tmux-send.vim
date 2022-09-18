@@ -7,4 +7,5 @@ let g:loaded_vim_tmux_send = 1
 
 command! -nargs=1 SendKeys :call vim_tmux_send#send_keys(<args>)
 command! SendMakeCmd :call vim_tmux_send#send_make_cmd()
-command! SendLine :call vim_tmux_send#send_line()
+command! SendLine :call vim_tmux_send#send_line('+')
+command! SendLineMinus :call vim_tmux_send#send_line('-')
