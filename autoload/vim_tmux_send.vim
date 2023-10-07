@@ -40,3 +40,10 @@ function! vim_tmux_send#send_selection(type)
     endif
     let @a = current_a_register
 endfunction
+
+function! vim_tmux_send#send_visual()
+    exe 'normal "ay'
+    let keys = @a
+    let keys = shellescape(keys)
+    call vim_tmux_send#send_keys(keys)
+endfunction
