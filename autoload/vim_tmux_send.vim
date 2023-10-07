@@ -42,7 +42,7 @@ function! vim_tmux_send#send_selection(type)
 endfunction
 
 function! vim_tmux_send#send_visual()
-    exe 'normal "ay'
+    exe 'normal "y'
     let keys = @a
     let keys = shellescape(keys)
     call vim_tmux_send#send_keys(keys)
