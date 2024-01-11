@@ -1,10 +1,15 @@
 function! vim_tmux_send#send_keys(keys, direction = '+')
-    let openenvvar = "〈〈"
-    let closeenvvar = "〉〉"
+    " let openenvvar = "〈〈"
+    " let closeenvvar = "〉〉"
+    " LEFT ARC GREATER-THAN BRACKET and RIGHT ARC GREATER-THAN BRACKET 
+    let openenvvar = "⦓"
+    let closeenvvar = "⦔"
     let keys_to_send = a:keys
     while stridx(keys_to_send, openenvvar) != -1 && stridx(keys_to_send, closeenvvar) != -1
         let start = stridx(keys_to_send, openenvvar) + strlen(openenvvar)
         let end = stridx(keys_to_send, closeenvvar) -1
+        " let envvarname = keys_to_send[start:end]
+        " let envvar = '"${' . envvarname . '}"'
         let curenv = environ()
         let envvarname = keys_to_send[start:end]
         if has_key(environ(), envvarname)
