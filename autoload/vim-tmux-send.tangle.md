@@ -15,6 +15,8 @@ These are all in `autoload`.
 
 This is the core function; I added a direction parameter to it in cases where I want to send to the previous, rather than next, pane.
 
+I added support for including environment variables, but ended up not using it much. I’ll get around to moving that functionality into its own function, and adding the ability to evaluate VimScript, at some point.
+
 ```vim
 function! vim_tmux_send#send_keys(keys, direction = '+')
     " let openenvvar = "〈〈"
@@ -65,7 +67,7 @@ endfunction
 
 ### `send_visual`
 
-The original didn’t have this. I’m not sure what the commented code was doing, and I should probably just delete it.
+The original didn’t have this, so I added it.
 
 ```vim
 function! vim_tmux_send#send_visual(rng1, rng2)
@@ -75,11 +77,6 @@ function! vim_tmux_send#send_visual(rng1, rng2)
         let keys = current_line . ' ENTER'
         call vim_tmux_send#send_keys(keys)
     endfor
-    " exe 'normal "ay'
-    " execute "normal! '[V']" . '"ay'
-    " let keys = @a
-    " let keys = shellescape(keys)
-    " call vim_tmux_send#send_keys(keys)
 endfunction
 ```
 
@@ -113,7 +110,7 @@ endfunction
 
 ### `send_make_cmd`
 
-This is nice idea, but I switched to this and to using `tmake` instead of using `makeprg`, so never use this either.
+This is a nice idea, but I switched to this and to using `tmake` instead of using `makeprg`, so never use this either.
 
 ```vim
 function! vim_tmux_send#send_make_cmd()
@@ -127,7 +124,7 @@ endfunction
 
 ## Plugin file
 
-This creates commands and goes in `plugin`
+This creates commands and goes in `plugin`:
 
 ```vim {filename=../plugin/vim-tmux-send.vim}
 " Send keys/commands from vim to other tmux panes.
