@@ -19,31 +19,12 @@ I added support for including environment variables, but ended up not using it m
 
 ```vim
 function! vim_tmux_send#send_keys(keys, direction = '+')
-    " let openenvvar = "〈〈"
-    " let closeenvvar = "〉〉"
-    " LEFT ARC GREATER-THAN BRACKET and RIGHT ARC GREATER-THAN BRACKET 
-    let openenvvar = "⦓"
-    let closeenvvar = "⦔"
-    let keys_to_send = a:keys
-    while stridx(keys_to_send, openenvvar) != -1 && stridx(keys_to_send, closeenvvar) != -1
-        let start = stridx(keys_to_send, openenvvar) + strlen(openenvvar)
-        let end = stridx(keys_to_send, closeenvvar) -1
-        " let envvarname = keys_to_send[start:end]
-        " let envvar = '"${' . envvarname . '}"'
-        let curenv = environ()
-        let envvarname = keys_to_send[start:end]
-        if has_key(environ(), envvarname)
-            let envvar = environ()[envvarname]
-        else
-            let envvar = "Env var not found: " . envvarname
-        endif
-        let keys_to_send = substitute(keys_to_send, openenvvar . envvarname . closeenvvar, envvar, "")
-    endwhile
-    let pane_count = str2nr(trim(system('tmux list-panes | wc -l')))
+    echom "WTF?"
+    let keys_to_send = vim_tmux_send#transform_keys(a:keys)
+    let pane_count = system('tmux list-panes | wc -l')->trim()->str2nr()
     if pane_count > 1
         let clear_line_cmd = 'tmux send-keys -t+ C-u'
         call system(clear_line_cmd)
-        " let cmd = 'tmux send-keys -t' . a:direction .' ' . a:keys
         let cmd = 'tmux send-keys -t' . a:direction .' ' . keys_to_send
         call system(cmd)
     else
@@ -122,6 +103,75 @@ function! vim_tmux_send#send_make_cmd()
 endfunction
 ```
 
+### `transform_keys`
+
+There are a few transformations I might want to apply to the text, such as adding contents of environment variables. These go here.
+
+```vim
+function! vim_tmux_send#transform_keys(keys)
+    let keys_to_send = a:keys
+    let keys_to_send = vim_tmux_send#resolve_env_vars(keys_to_send)
+    let keys_to_send = vim_tmux_send#resolve_filepath(keys_to_send)
+    let keys_to_send = vim_tmux_send#resolve_filedir(keys_to_send)
+    return keys_to_send
+endfunction
+```
+
+#### Resolve environment variables
+
+```vim
+function! vim_tmux_send#resolve_env_vars(keys)
+    let keys_to_send = a:keys
+    " LEFT ARC GREATER-THAN BRACKET and RIGHT ARC GREATER-THAN BRACKET 
+    let openenvvar = "⦓"
+    let closeenvvar = "⦔"
+    while stridx(keys_to_send, openenvvar) != -1 && stridx(keys_to_send, closeenvvar) != -1
+        let start = stridx(keys_to_send, openenvvar) + strlen(openenvvar)
+        let end = stridx(keys_to_send, closeenvvar) -1
+        let curenv = environ()
+        let envvarname = keys_to_send[start:end]
+        if has_key(environ(), envvarname)
+            let envvar = environ()[envvarname]
+        else
+            let envvar = "Env var not found: " . envvarname
+        endif
+        let keys_to_send = substitute(keys_to_send, openenvvar . envvarname . closeenvvar, envvar, "")
+    endwhile
+    return keys_to_send
+endfunction
+```
+
+#### Resolve filepath
+
+This inserts the filepath of the current file:
+
+```vim
+function! vim_tmux_send#resolve_filepath(keys)
+    let keys_to_send = a:keys
+    let filepath_magic_string = "%%%vim_tmux_send_filepath%%%"
+    while stridx(keys_to_send, filepath_magic_string) != -1
+        echom "stridx!!!!!" . stridx(keys_to_send, filepath_magic_string)
+        let keys_to_send = substitute(keys_to_send, filepath_magic_string, expand("%:p"), "")
+    endwhile
+    return keys_to_send
+endfunction
+```
+
+#### Resolve parent path
+
+This inserts the path of the current file’s directory:
+
+```vim
+function! vim_tmux_send#resolve_filedir(keys)
+    let keys_to_send = a:keys
+    let filepath_magic_string = "%%%vim_tmux_send_filedir%%%"
+    while stridx(keys_to_send, filepath_magic_string) != -1
+        let keys_to_send = substitute(keys_to_send, filepath_magic_string, expand("%:p:h"), "")
+    endwhile
+    return keys_to_send
+endfunction
+```
+
 ## Plugin file
 
 This creates commands and goes in `plugin`:
@@ -138,6 +188,18 @@ command! -nargs=1 SendKeys :call vim_tmux_send#send_keys(<args>)
 command! SendMakeCmd :call vim_tmux_send#send_make_cmd()
 command! SendLine :call vim_tmux_send#send_line('+')
 command! SendLineMinus :call vim_tmux_send#send_line('-')
+```
+
+## UltiSnips file
+
+```ultisnips {filename=../ultisnips/all.snippets}
+snippet :vtsfp "vim_tmux_send_filepath" i
+%%%vim_tmux_send_filepath%%%
+endsnippet
+
+snippet :vtsfd "vim_tmux_send_filedir" i
+%%%vim_tmux_send_filedir%%%
+endsnippet
 ```
 
 <!--
