@@ -1,5 +1,5 @@
 # Vim tmux send
-<!-- !ep{tanglefile: vim_tmux_send.vim; }! -->
+<!-- !ep{type: tangle; tanglefile: vim_tmux_send.vim; }! -->
 
 ## Overview
 
@@ -19,7 +19,6 @@ I added support for including environment variables, but ended up not using it m
 
 ```vim
 function! vim_tmux_send#send_keys(keys, direction = '+')
-    echom "WTF?"
     let keys_to_send = vim_tmux_send#transform_keys(a:keys)
     let pane_count = system('tmux list-panes | wc -l')->trim()->str2nr()
     if pane_count > 1
@@ -150,7 +149,6 @@ function! vim_tmux_send#resolve_filepath(keys)
     let keys_to_send = a:keys
     let filepath_magic_string = "%%%vim_tmux_send_filepath%%%"
     while stridx(keys_to_send, filepath_magic_string) != -1
-        echom "stridx!!!!!" . stridx(keys_to_send, filepath_magic_string)
         let keys_to_send = substitute(keys_to_send, filepath_magic_string, expand("%:p"), "")
     endwhile
     return keys_to_send
@@ -188,6 +186,7 @@ command! -nargs=1 SendKeys :call vim_tmux_send#send_keys(<args>)
 command! SendMakeCmd :call vim_tmux_send#send_make_cmd()
 command! SendLine :call vim_tmux_send#send_line('+')
 command! SendLineMinus :call vim_tmux_send#send_line('-')
+command! -range=% SendVisual call vim_tmux_send#send_visual(<line1>, <line2>)
 ```
 
 ## UltiSnips file
@@ -202,17 +201,14 @@ snippet :vtsfd "vim_tmux_send_filedir" i
 endsnippet
 ```
 
-<!--
-
 ## tmake
 
+```text{.notangle}
 tmake:
 
 mdtangle /Users/tadhg/vcs/vimplugins/vim-tmux-send/autoload/vim-tmux-send.tangle.md
 
-
--->
-
+```
 
 ## EPMetadata
 
