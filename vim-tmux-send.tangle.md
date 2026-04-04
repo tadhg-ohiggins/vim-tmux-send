@@ -1,5 +1,5 @@
 # Vim tmux send
-<!-- !ep{type: tangle; tanglefile: vim_tmux_send.vim; }! -->
+<!-- !ep{type: tangle; tanglefile: autoload/vim_tmux_send.vim; }! -->
 
 ## Overview
 
@@ -174,7 +174,7 @@ endfunction
 
 This creates commands and goes in `plugin`:
 
-```vim {filename=../plugin/vim-tmux-send.vim}
+```vim {filename=plugin/vim-tmux-send.vim}
 " Send keys/commands from vim to other tmux panes.
 
 if exists("g:loaded_vim_tmux_send") || !exists("$TMUX")
@@ -191,7 +191,7 @@ command! -range=% SendVisual call vim_tmux_send#send_visual(<line1>, <line2>)
 
 ## UltiSnips file
 
-```ultisnips {filename=../ultisnips/all.snippets}
+```ultisnips {filename=ultisnips/all.snippets}
 snippet :vtsfp "vim_tmux_send_filepath" i
 %%%vim_tmux_send_filepath%%%
 endsnippet
@@ -206,7 +206,8 @@ endsnippet
 ```text{.notangle}
 tmake:
 
-mdtangle /Users/tadhg/vcs/vimplugins/vim-tmux-send/autoload/vim-tmux-send.tangle.md
+cd %%%vim_tmux_send_filedir%%%
+mdtangle %%%vim_tmux_send_filepath%%%
 
 ```
 

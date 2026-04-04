@@ -1,5 +1,4 @@
 function! vim_tmux_send#send_keys(keys, direction = '+')
-    echom "WTF?"
     let keys_to_send = vim_tmux_send#transform_keys(a:keys)
     let pane_count = system('tmux list-panes | wc -l')->trim()->str2nr()
     if pane_count > 1
@@ -84,7 +83,6 @@ function! vim_tmux_send#resolve_filepath(keys)
     let keys_to_send = a:keys
     let filepath_magic_string = "%%%vim_tmux_send_filepath%%%"
     while stridx(keys_to_send, filepath_magic_string) != -1
-        echom "stridx!!!!!" . stridx(keys_to_send, filepath_magic_string)
         let keys_to_send = substitute(keys_to_send, filepath_magic_string, expand("%:p"), "")
     endwhile
     return keys_to_send
@@ -100,5 +98,5 @@ function! vim_tmux_send#resolve_filedir(keys)
 endfunction
 
 
-" Built with mdtangle from:
-" /Users/tadhg/vcs/vimplugins/vim-tmux-send/autoload/vim-tmux-send.tangle.md
+" Built 2026-04-03 with mdtangle from:
+" /Users/tadhg/vcs/vimplugins/vim-tmux-send/vim-tmux-send.tangle.md
