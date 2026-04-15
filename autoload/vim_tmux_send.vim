@@ -53,9 +53,20 @@ endfunction
 
 function! vim_tmux_send#transform_keys(keys)
     let keys_to_send = a:keys
+    " echom 1
+    " echom keys_to_send
+    let keys_to_send = vim_tmux_send#resolve_vimscript(keys_to_send)
+    " echom 2
+    " echom keys_to_send
     let keys_to_send = vim_tmux_send#resolve_env_vars(keys_to_send)
+    " echom 3
+    " echom keys_to_send
     let keys_to_send = vim_tmux_send#resolve_filepath(keys_to_send)
+    " echom 4
+    " echom keys_to_send
     let keys_to_send = vim_tmux_send#resolve_filedir(keys_to_send)
+    " echom 5
+    " echom keys_to_send
     return keys_to_send
 endfunction
 
@@ -79,6 +90,49 @@ function! vim_tmux_send#resolve_env_vars(keys)
     return keys_to_send
 endfunction
 
+
+function! vim_tmux_send#starts_with(longer, shorter) abort
+  return a:longer[0:len(a:shorter)-1] ==# a:shorter
+endfunction
+
+function! vim_tmux_send#del_prefix(text, prefix) abort
+    if StartsWith(a:text, a:prefix)
+        return a:text[strlen(a:prefix):]
+    endif
+    return a:text
+endfunction
+
+function! vim_tmux_send#del_suffix(text, suffix) abort
+    if EndsWith(a:text, a:suffix)
+        return a:text[:-(strlen(a:suffix)+1)]
+    endif
+    return a:text
+endfunction
+
+function! vim_tmux_send#resolve_vimscript(keys)
+    let keys_to_send = a:keys
+    let vimscript_magic_string = "'%%%vim_tmux_send_vimscript_line%%%"
+    let magic_suffix = "' ENTER"
+    let lines = split(keys_to_send, "\n")
+    let newlines = []
+    for line in lines
+        " echom line
+        " echom vimscript_magic_string
+        " echom vim_tmux_send#starts_with(line, vimscript_magic_string)
+        if vim_tmux_send#starts_with(line, vimscript_magic_string)
+            let command = vim_tmux_send#del_suffix(vim_tmux_send#del_prefix(line, vimscript_magic_string), magic_suffix)
+            exe command
+            " let vsline = line
+        else
+            call add(newlines, line)
+        endif
+    endfor
+    let output = join(newlines, "\n")
+    " echom "output"
+    " echom output
+    return output
+endfunction
+
 function! vim_tmux_send#resolve_filepath(keys)
     let keys_to_send = a:keys
     let filepath_magic_string = "%%%vim_tmux_send_filepath%%%"
@@ -98,5 +152,5 @@ function! vim_tmux_send#resolve_filedir(keys)
 endfunction
 
 
-" Built 2026-04-03 with mdtangle from:
+" Built 2026-04-15 with mdtangle from:
 " /Users/tadhg/vcs/vimplugins/vim-tmux-send/vim-tmux-send.tangle.md

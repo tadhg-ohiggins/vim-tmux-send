@@ -6,6 +6,15 @@ snippet :vtsfd "vim_tmux_send_filedir" i
 %%%vim_tmux_send_filedir%%%
 endsnippet
 
+snippet :vtssetenv "vim_tmux_send_env" i
+%%%vim_tmux_send_vimscript_line%%% call setenv("$1", "$2")
+echo ⦓$1⦔
+endsnippet
 
-# Built 2026-04-03 with mdtangle from:
+snippet :vtsenv "vim_tmux_send_env" i
+⦓$1⦔
+endsnippet
+
+
+# Built 2026-04-15 with mdtangle from:
 # /Users/tadhg/vcs/vimplugins/vim-tmux-send/vim-tmux-send.tangle.md
