@@ -254,6 +254,34 @@ command! -range=% SendVisual call vim_tmux_send#send_visual(<line1>, <line2>)
 ## UltiSnips file
 
 ```ultisnips {filename=ultisnips/all.snippets}
+#literate console:
+#LEFT ARC GREATER-THAN BRACKET and RIGHT ARC GREATER-THAN BRACKET 
+snippet evar "Bracket for env var" w
+⦓LITC_${1}⦔
+endsnippet
+
+snippet :evar "Bracket for env var" i
+⦓LITC_${1}⦔
+endsnippet
+
+snippet eset "Line to set env var" w
+export LITC_${1}="${2}"
+endsnippet
+
+snippet :eset "Line to set env var" i
+export LITC_${1}="${2}"
+endsnippet
+
+snippet vset "Line to set Vim env var" w
+call setenv("LITC_${1}", "${2}")
+endsnippet
+
+snippet :vset "Line to set Vim env var" i
+%%%vim_tmux_send_vimscript_line%%% call setenv("LITC_${1}", "${2}")
+endsnippet
+
+#/literate console
+
 snippet :vtsfp "vim_tmux_send_filepath" i
 %%%vim_tmux_send_filepath%%%
 endsnippet
